@@ -2,14 +2,20 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const authRoutes = require("./routes/authRoutes");
+const ticketRoutes = require("./routes/ticketRoutes");
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+app.use("/api/auth", authRoutes);
+app.use("/api/tickets", ticketRoutes);
+
 app.get("/", (req, res) => {
-  res.send("Help Desk API Running");
+  res.sendFile(__dirname + "/public/pages/index.html");
 });
 
 const PORT = process.env.PORT || 5000;

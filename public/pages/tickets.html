@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tickets | Help Desk</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Help Desk</h2>
+      <a href="/pages/dashboard.html">Dashboard</a>
+      <a href="/pages/tickets.html">Tickets</a>
+      <a href="/pages/login.html">Logout</a>
+    </aside>
+
+    <main class="content">
+      <h1>Tickets</h1>
+
+      <form class="ticket-form" id="ticketForm">
+        <input type="text" id="title" placeholder="Ticket title" required>
+        <textarea id="description" placeholder="Ticket description" required></textarea>
+
+        <select id="category" required>
+          <option value="">Category</option>
+          <option value="Hardware">Hardware</option>
+          <option value="Software">Software</option>
+          <option value="Network">Network</option>
+          <option value="Email">Email</option>
+          <option value="Access Request">Access Request</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <select id="priority" required>
+          <option value="">Priority</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+          <option value="Critical">Critical</option>
+        </select>
+
+        <button type="submit" class="btn">Create Ticket</button>
+      </form>
+
+      <section id="ticketList" class="ticket-list"></section>
+    </main>
+  </div>
+
+  <script src="/js/tickets.js"></script>
+</body>
+</html>
