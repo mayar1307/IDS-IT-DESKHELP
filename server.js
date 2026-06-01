@@ -4,6 +4,8 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
+const commentRoutes = require("./routes/commentRoutes");
+const statusRoutes = require("./routes/statusRoutes");
 
 const app = express();
 
@@ -13,6 +15,8 @@ app.use(express.static("public"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/status", statusRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/pages/index.html");
