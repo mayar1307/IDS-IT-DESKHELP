@@ -9,7 +9,7 @@ const ticketRoutes = require("./routes/ticketRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const statusRoutes = require("./routes/statusRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
-
+const attachmentRoutes = require("./routes/attachementRoutes");
 const app = express();
 
 app.use(cors());
@@ -27,6 +27,7 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/status", statusRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/attachments", attachmentRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/pages/index.html");
