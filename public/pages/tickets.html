@@ -10,7 +10,7 @@
       <h2>Help Desk</h2>
       <a href="/pages/dashboard.html">Dashboard</a>
       <a href="/pages/tickets.html">Tickets</a>
-      <a href="/pages/login.html">Logout</a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
     </aside>
 
     <main class="content">
@@ -22,23 +22,24 @@
 
         <select id="category" required>
           <option value="">Category</option>
-          <option value="Hardware">Hardware</option>
-          <option value="Software">Software</option>
-          <option value="Network">Network</option>
-          <option value="Email">Email</option>
-          <option value="Access Request">Access Request</option>
-          <option value="Other">Other</option>
+          <option value="1">Hardware</option>
+          <option value="2">Software</option>
+          <option value="3">Network</option>
+          <option value="4">Email</option>
+          <option value="5">Access Request</option>
+          <option value="6">Other</option>
         </select>
 
         <select id="priority" required>
           <option value="">Priority</option>
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-          <option value="Critical">Critical</option>
+          <option value="1">Low</option>
+          <option value="2">Medium</option>
+          <option value="3">High</option>
+          <option value="4">Critical</option>
         </select>
 
         <button type="submit" class="btn">Create Ticket</button>
+        <p id="message"></p>
       </form>
 
       <section id="ticketList" class="ticket-list"></section>

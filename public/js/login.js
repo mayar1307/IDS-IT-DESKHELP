@@ -19,15 +19,13 @@ loginForm.addEventListener("submit", async (event) => {
     });
 
     const data = await response.json();
-
     message.textContent = data.message;
 
-    console.log("Login response:", data);
-
     if (response.ok) {
-      setTimeout(() => {
-        window.location.href = "/pages/dashboard.html";
-      }, 800);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      window.location.href = "/pages/dashboard.html";
     }
   } catch (error) {
     message.textContent = "Something went wrong.";
