@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const logActivity = require("../utils/activityLogger");
 
 async function getTickets(req, res) {
   try {
@@ -65,6 +66,13 @@ async function createTicket(req, res) {
         statusId
       ]
     );
+    
+    await logActivity({
+      action: "CREATE_TICKET",
+      entityId: result.insertId,
+      entityType: "Ticket",
+      userId: req.user.userId
+    });
 
     res.status(201).json({
       message: "Ticket created successfully",
@@ -81,6 +89,7 @@ async function createTicket(req, res) {
 async function updateTicket(req, res) {
   try {
     const ticketId = req.params.id;
+    const changedBy = req.user.userId;
 
     const {
       title,
@@ -90,6 +99,17 @@ async function updateTicket(req, res) {
       assignedTo,
       statusId
     } = req.body;
+
+    const [oldTicketRows] = await db.query(
+      "SELECT StatusId FROM Ticket WHERE TicketId = ?",
+      [ticketId]
+    );
+
+    if (oldTicketRows.length === 0) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    const oldStatusId = oldTicketRows[0].StatusId;
 
     await db.query(
       `
@@ -115,8 +135,28 @@ async function updateTicket(req, res) {
       ]
     );
 
+    if (oldStatusId !== statusId) {
+      await db.query(
+        `
+        INSERT INTO TicketHistory
+        (ChangedAt, TicketId, ChangedBy, OldStatusId, NewStatusId)
+        VALUES (NOW(), ?, ?, ?, ?)
+        `,
+        [ticketId, changedBy, oldStatusId, statusId]
+      );
+    }
+
+    await logActivity({
+      action: "UPDATE_TICKET",
+      entityId: ticketId,
+      entityType: "Ticket",
+      userId: changedBy
+    });
+
     res.json({
-      message: "Ticket updated successfully"
+      message: "Ticket updated successfully",
+      oldStatusId,
+      newStatusId: statusId
     });
   } catch (error) {
     res.status(500).json({
@@ -134,6 +174,13 @@ async function deleteTicket(req, res) {
       "DELETE FROM Ticket WHERE TicketId = ?",
       [ticketId]
     );
+
+    await logActivity({
+      action: "DELETE_TICKET",
+      entityId: ticketId,
+      entityType: "Ticket",
+      userId: req.user.userId
+    });
 
     res.json({
       message: "Ticket deleted successfully"

@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const logActivity = require("../utils/activityLogger");
 
 async function getCommentsByTicket(req, res) {
   try {
@@ -50,6 +51,13 @@ async function createComment(req, res) {
       `,
       [message, ticketId, userId]
     );
+
+    await logActivity({
+      action: "CREATE_COMMENT",
+      entityId: result.insertId,
+      entityType: "TicketComment",
+      userId
+    });
 
     res.status(201).json({
       message: "Comment added successfully",

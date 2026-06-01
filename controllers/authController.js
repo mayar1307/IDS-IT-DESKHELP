@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../config/db");
+const logActivity = require("../utils/activityLogger");
 
 async function register(req, res) {
   try {
@@ -28,6 +29,13 @@ async function register(req, res) {
        VALUES (?, ?, ?, ?, ?)`,
       [name, email, hashedPassword, roleId, departmentId || null]
     );
+
+    await logActivity({
+      action: "LOGIN",
+      entityId: user.UserId,
+      entityType: "User",
+      userId: user.UserId
+    });
 
     res.status(201).json({
       message: "User registered successfully."
