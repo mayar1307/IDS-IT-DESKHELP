@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const db = require("./config/db");
+
 const authRoutes = require("./routes/authRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
 const commentRoutes = require("./routes/commentRoutes");
@@ -12,6 +14,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+
+// Test database connection
+db.query("SELECT 1")
+  .then(() => console.log("Database connected successfully"))
+  .catch((err) => console.error("Database connection failed:", err.message));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tickets", ticketRoutes);
