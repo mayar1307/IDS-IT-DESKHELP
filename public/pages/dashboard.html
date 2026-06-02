@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard | Help Desk</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Help Desk</h2>
+      <a href="/pages/dashboard.html">Dashboard</a>
+      <a href="/pages/tickets.html">Tickets</a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </aside>
+
+    <main class="content">
+      <h1>Dashboard</h1>
+      <p>Welcome, <strong id="userName"></strong> <span id="userRole"></span></p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Tickets</h3>
+          <p id="totalTickets">0</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>Open Tickets</h3>
+          <p id="openTickets">0</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>In Progress</h3>
+          <p id="inProgressTickets">0</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>Pending</h3>
+          <p id="pendingTickets">0</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>Resolved</h3>
+          <p id="resolvedTickets">0</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>Closed</h3>
+          <p id="closedTickets">0</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>Total Users</h3>
+          <p id="totalUsers">0</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
