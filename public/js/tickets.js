@@ -10,51 +10,53 @@ const ticketList = document.getElementById("ticketList");
 const message = document.getElementById("message");
 
 async function loadTickets() {
-  try {
-    const response = await fetch("/api/tickets", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+  const response = await fetch("/api/tickets", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 
-    const tickets = await response.json();
+  const tickets = await response.json();
+  ticketList.innerHTML = "";
 
-    ticketList.innerHTML = "";
+  tickets.forEach((ticket) => {
+    const card = document.createElement("div");
+    card.className = "ticket-card";
 
-    tickets.forEach((ticket) => {
-      const card = document.createElement("div");
-      card.className = "ticket-card";
+    card.innerHTML = `
+      <h3>${ticket.Title}</h3>
+      <p>${ticket.Description}</p>
+      <p><strong>Category:</strong> ${ticket.Category}</p>
+      <p><strong>Priority:</strong> ${ticket.Priority}</p>
+      <p><strong>Status:</strong> ${ticket.Status}</p>
 
-      card.innerHTML = `
-        <h3>${ticket.Title}</h3>
-        <p>${ticket.Description}</p>
-        <p><strong>Category:</strong> ${ticket.Category}</p>
-        <p><strong>Priority:</strong> ${ticket.Priority}</p>
-        <p><strong>Status:</strong> ${ticket.Status}</p>
-        <p><strong>Created:</strong> ${new Date(ticket.CreatedAt).toLocaleString()}</p>
+      <button class="btn small" onclick="showEditForm(${ticket.TicketId}, '${ticket.Title}', '${ticket.Description}')">
+        Edit
+      </button>
 
-        <div class="comment-box">
-          <input type="text" id="comment-${ticket.TicketId}" placeholder="Add a comment">
-          <button class="btn small" onclick="addComment(${ticket.TicketId})">Comment</button>
-          <button class="btn secondary small" onclick="loadComments(${ticket.TicketId})">View Comments</button>
-        </div>
+      <button class="btn secondary small" onclick="deleteTicket(${ticket.TicketId})">
+        Delete
+      </button>
 
-        <div id="comments-${ticket.TicketId}" class="comments"></div>
+      <div id="edit-${ticket.TicketId}" class="comments"></div>
 
-        <div class="attachment-box">
-          <input type="text" id="attachment-${ticket.TicketId}" placeholder="File path e.g. docs/error.png">
-          <button class="btn small" onclick="addAttachment(${ticket.TicketId})">Add Attachment</button>
-          <button class="btn secondary small" onclick="loadAttachments(${ticket.TicketId})">View Attachments</button>
-        </div>
+      <div class="comment-box">
+        <input type="text" id="comment-${ticket.TicketId}" placeholder="Add a comment">
+        <button class="btn small" onclick="addComment(${ticket.TicketId})">Comment</button>
+        <button class="btn secondary small" onclick="loadComments(${ticket.TicketId})">View Comments</button>
+      </div>
 
-        <div id="attachments-${ticket.TicketId}" class="comments"></div>
-      `;
+      <div id="comments-${ticket.TicketId}" class="comments"></div>
 
-      ticketList.appendChild(card);
-    });
-  } catch (error) {
-    console.error(error);
-  }
+      <div class="attachment-box">
+        <input type="text" id="attachment-${ticket.TicketId}" placeholder="File path e.g. docs/error.png">
+        <button class="btn small" onclick="addAttachment(${ticket.TicketId})">Add Attachment</button>
+        <button class="btn secondary small" onclick="loadAttachments(${ticket.TicketId})">View Attachments</button>
+      </div>
+
+      <div id="attachments-${ticket.TicketId}" class="comments"></div>
+    `;
+
+    ticketList.appendChild(card);
+  });
 }
 
 ticketForm.addEventListener("submit", async (event) => {
@@ -70,27 +72,105 @@ ticketForm.addEventListener("submit", async (event) => {
     statusId: 1
   };
 
-  try {
-    const response = await fetch("/api/tickets", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(ticketData)
-    });
+  const response = await fetch("/api/tickets", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(ticketData)
+  });
 
-    const data = await response.json();
-    message.textContent = data.message;
+  const data = await response.json();
+  message.textContent = data.message;
 
-    if (response.ok) {
-      ticketForm.reset();
-      loadTickets();
-    }
-  } catch (error) {
-    console.error(error);
+  if (response.ok) {
+    ticketForm.reset();
+    loadTickets();
   }
 });
+
+function showEditForm(ticketId, title, description) {
+  const container = document.getElementById(`edit-${ticketId}`);
+
+  container.innerHTML = `
+    <div class="mini-card">
+      <input type="text" id="edit-title-${ticketId}" value="${title}">
+      <textarea id="edit-description-${ticketId}">${description}</textarea>
+
+      <select id="edit-category-${ticketId}">
+        <option value="1">Hardware</option>
+        <option value="2">Software</option>
+        <option value="3">Network</option>
+        <option value="4">Email</option>
+        <option value="5">Access Request</option>
+        <option value="6">Other</option>
+      </select>
+
+      <select id="edit-priority-${ticketId}">
+        <option value="1">Low</option>
+        <option value="2">Medium</option>
+        <option value="3">High</option>
+        <option value="4">Critical</option>
+      </select>
+
+      <select id="edit-status-${ticketId}">
+        <option value="1">Open</option>
+        <option value="2">In Progress</option>
+        <option value="3">Pending</option>
+        <option value="4">Resolved</option>
+        <option value="5">Closed</option>
+      </select>
+
+      <button class="btn small" onclick="updateTicket(${ticketId})">Save Update</button>
+    </div>
+  `;
+}
+
+async function updateTicket(ticketId) {
+  const updatedTicket = {
+    title: document.getElementById(`edit-title-${ticketId}`).value,
+    description: document.getElementById(`edit-description-${ticketId}`).value,
+    categoryId: Number(document.getElementById(`edit-category-${ticketId}`).value),
+    priorityId: Number(document.getElementById(`edit-priority-${ticketId}`).value),
+    assignedTo: user.userId,
+    statusId: Number(document.getElementById(`edit-status-${ticketId}`).value)
+  };
+
+  const response = await fetch(`/api/tickets/${ticketId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(updatedTicket)
+  });
+
+  const data = await response.json();
+  alert(data.message);
+
+  if (response.ok) {
+    loadTickets();
+  }
+}
+
+async function deleteTicket(ticketId) {
+  if (!confirm("Are you sure you want to delete this ticket?")) return;
+
+  const response = await fetch(`/api/tickets/${ticketId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await response.json();
+  alert(data.message);
+
+  if (response.ok) {
+    loadTickets();
+  }
+}
 
 async function addComment(ticketId) {
   const input = document.getElementById(`comment-${ticketId}`);
@@ -114,9 +194,7 @@ async function addComment(ticketId) {
 
 async function loadComments(ticketId) {
   const response = await fetch(`/api/comments/ticket/${ticketId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const comments = await response.json();
@@ -152,9 +230,7 @@ async function addAttachment(ticketId) {
 
 async function loadAttachments(ticketId) {
   const response = await fetch(`/api/attachments/${ticketId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const attachments = await response.json();
