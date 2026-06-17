@@ -1,7 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Sidebar() {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   function logout() {
     localStorage.clear();
@@ -10,20 +11,39 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <h2>Help Desk</h2>
+      <div className="sidebar-logo">
+        <div className="logo-icon">🎧</div>
+        <div>
+          <h2>HelpDesk</h2>
+          <p>Support Center</p>
+        </div>
+      </div>
 
-      <nav>
-        <Link to="/dashboard">
+      <div className="user-box">
+        <div className="avatar">
+          {user?.name?.charAt(0)?.toUpperCase() || "U"}
+        </div>
+
+        <div>
+          <h4>{user?.name || "User"}</h4>
+          <p>{user?.role || "Employee"}</p>
+        </div>
+      </div>
+
+      <nav className="sidebar-nav">
+        <NavLink to="/dashboard">
+          <span>📊</span>
           Dashboard
-        </Link>
+        </NavLink>
 
-        <Link to="/tickets">
+        <NavLink to="/tickets">
+          <span>🎫</span>
           Tickets
-        </Link>
+        </NavLink>
       </nav>
 
-      <button onClick={logout}>
-        Logout
+      <button className="logout-btn" onClick={logout}>
+        🚪 Logout
       </button>
     </aside>
   );
