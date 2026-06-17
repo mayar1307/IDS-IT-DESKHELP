@@ -35,10 +35,17 @@ async function createTicket(req, res) {
       description,
       categoryId,
       priorityId,
-      createdBy,
       assignedTo,
       statusId
     } = req.body;
+
+    const createdBy = req.user.userId;
+
+    if (!title || !description || !categoryId || !priorityId) {
+      return res.status(400).json({
+        message: "Title, description, categoryId, and priorityId are required."
+      });
+    }
 
     const [result] = await db.query(
       `
@@ -62,16 +69,16 @@ async function createTicket(req, res) {
         categoryId,
         priorityId,
         createdBy,
-        assignedTo,
-        statusId
+        assignedTo || null,
+        statusId || 1
       ]
     );
-    
+
     await logActivity({
       action: "CREATE_TICKET",
       entityId: result.insertId,
       entityType: "Ticket",
-      userId: req.user.userId
+      userId: createdBy
     });
 
     res.status(201).json({
@@ -106,7 +113,9 @@ async function updateTicket(req, res) {
     );
 
     if (oldTicketRows.length === 0) {
-      return res.status(404).json({ message: "Ticket not found" });
+      return res.status(404).json({
+        message: "Ticket not found"
+      });
     }
 
     const oldStatusId = oldTicketRows[0].StatusId;
@@ -129,7 +138,7 @@ async function updateTicket(req, res) {
         description,
         categoryId,
         priorityId,
-        assignedTo,
+        assignedTo || null,
         statusId,
         ticketId
       ]
@@ -199,4 +208,3 @@ module.exports = {
   updateTicket,
   deleteTicket
 };
-

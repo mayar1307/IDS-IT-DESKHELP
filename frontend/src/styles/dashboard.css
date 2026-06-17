@@ -1,0 +1,63 @@
+.dashboard-layout {
+  display: flex;
+}
+
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: #1e293b;
+  padding: 30px;
+}
+
+.sidebar h2 {
+  margin-bottom: 40px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar a {
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.sidebar a:hover {
+  background: #334155;
+}
+
+.sidebar button {
+  margin-top: 30px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #ef4444;
+  color: white;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.stats-grid {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.stat-card p {
+  margin-top: 20px;
+  font-size: 40px;
+  font-weight: bold;
+}

@@ -24,18 +24,18 @@ async function register(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await db.query(
-      `INSERT INTO User (Name, Email, Password, RoleId, DepartmentId)
-       VALUES (?, ?, ?, ?, ?)`,
-      [name, email, hashedPassword, roleId, departmentId || null]
-    );
+const [result] = await db.query(
+  `INSERT INTO User (Name, Email, Password, RoleId, DepartmentId)
+   VALUES (?, ?, ?, ?, ?)`,
+  [name, email, hashedPassword, roleId, departmentId || null]
+);
 
-    await logActivity({
-      action: "LOGIN",
-      entityId: user.UserId,
-      entityType: "User",
-      userId: user.UserId
-    });
+await logActivity({
+  action: "REGISTER",
+  entityId: result.insertId,
+  entityType: "User",
+  userId: result.insertId
+});
 
     res.status(201).json({
       message: "User registered successfully."

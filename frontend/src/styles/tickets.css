@@ -1,0 +1,32 @@
+.tickets-layout {
+  display: flex;
+}
+
+.tickets-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.tickets-list {
+  margin-top: 30px;
+  display: grid;
+  gap: 20px;
+}
+
+.ticket-card {
+  background: #1e293b;
+  padding: 25px;
+  border-radius: 20px;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.ticket-header span {
+  background: #2563eb;
+  padding: 8px 14px;
+  border-radius: 20px;
+}
