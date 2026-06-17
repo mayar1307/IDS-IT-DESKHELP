@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../styles/tickets.css";
 
 function Tickets() {
   const [tickets, setTickets] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTickets();
@@ -50,7 +52,9 @@ function Tickets() {
             </p>
           </div>
 
-          <button className="new-ticket-btn">+ New Ticket</button>
+          <button className="new-ticket-btn" onClick={() => navigate("/tickets/new")}>
+            + New Ticket
+          </button>
         </header>
 
         <section className="ticket-summary">
@@ -127,7 +131,9 @@ function Tickets() {
                   </div>
                 </div>
 
-                <button className="ticket-action-btn">View Details</button>
+                <button className="ticket-action-btn" onClick={() => navigate(`/tickets/${ticket.TicketId}`)}>
+                  View Details
+                </button>
               </div>
             ))
           )}

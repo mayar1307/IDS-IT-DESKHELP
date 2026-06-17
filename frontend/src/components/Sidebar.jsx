@@ -31,15 +31,16 @@ function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/dashboard">
-          <span>📊</span>
-          Dashboard
-        </NavLink>
+        <NavLink to="/dashboard">📊 Dashboard</NavLink>
+        <NavLink to="/tickets">🎫 Tickets</NavLink>
+        <NavLink to="/tickets/create">➕ Create Ticket</NavLink>
+        <NavLink to="/reports">📈 Reports</NavLink>
+        <NavLink to="/notifications">🔔 Notifications</NavLink>
+        <NavLink to="/profile">👤 Profile</NavLink>
 
-        <NavLink to="/tickets">
-          <span>🎫</span>
-          Tickets
-        </NavLink>
+        {user?.role === "Admin" && (
+          <NavLink to="/admin-settings">⚙️ Admin Settings</NavLink>
+        )}
       </nav>
 
       <button className="logout-btn" onClick={logout}>
