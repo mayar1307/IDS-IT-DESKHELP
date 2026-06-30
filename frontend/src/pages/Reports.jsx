@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+
 import Sidebar from "../components/Sidebar";
 import api from "../services/api";
 import "../styles/app-pages.css";
@@ -26,6 +30,51 @@ function Reports() {
     return Math.round((value / total) * 100);
   }
 
+  const reportData = [
+    ["Total Tickets", stats.totalTickets || 0],
+    ["Open Tickets", stats.openTickets || 0],
+    ["In Progress Tickets", stats.inProgressTickets || 0],
+    ["Pending Tickets", stats.pendingTickets || 0],
+    ["Resolved Tickets", stats.resolvedTickets || 0],
+    ["Closed Tickets", stats.closedTickets || 0],
+    ["Total Users", stats.totalUsers || 0],
+    ["Resolution Rate", `${percent(stats.resolvedTickets || 0)}%`]
+  ];
+
+  function exportPDF() {
+    const doc = new jsPDF();
+
+    doc.setFontSize(20);
+    doc.text("Help Desk Report", 14, 20);
+
+    doc.setFontSize(11);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
+
+    autoTable(doc, {
+      startY: 40,
+      head: [["Metric", "Value"]],
+      body: reportData
+    });
+
+    doc.save("helpdesk-report.pdf");
+  }
+
+  function exportExcel() {
+    const worksheet = XLSX.utils.aoa_to_sheet([
+      ["Help Desk Report"],
+      [`Generated on: ${new Date().toLocaleString()}`],
+      [],
+      ["Metric", "Value"],
+      ...reportData
+    ]);
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    XLSX.writeFile(workbook, "helpdesk-report.xlsx");
+  }
+
   return (
     <div className="page-layout">
       <Sidebar />
@@ -40,7 +89,15 @@ function Reports() {
             </p>
           </div>
 
-          <button className="primary-btn">Export Report</button>
+          <div className="report-actions">
+            <button className="primary-btn" onClick={exportPDF}>
+              Export PDF
+            </button>
+
+            <button className="primary-btn" onClick={exportExcel}>
+              Export Excel
+            </button>
+          </div>
         </div>
 
         <section className="report-grid">

@@ -18,6 +18,24 @@ function CreateTicket() {
 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState(null);
+
+  const categoryMap = {
+    Hardware: 1,
+    Software: 2,
+    Network: 3,
+    Email: 4,
+    "Access Request": 5,
+    Other: 6
+  };
+
+  const priorityMap = {
+    Low: 1,
+    Medium: 2,
+    High: 3,
+    Critical: 4
+  };
 
   function handleChange(e) {
     setFormData({
@@ -29,6 +47,42 @@ function CreateTicket() {
             : Number(e.target.value)
           : e.target.value
     });
+  }
+
+  async function analyzeWithAI() {
+    if (!formData.description.trim()) {
+      setMessage("Write the ticket description first.");
+      return;
+    }
+
+    setAiLoading(true);
+    setMessage("");
+
+    try {
+      const response = await api.post("/ai/analyze-ticket", {
+        title: formData.title,
+        description: formData.description
+      });
+
+      const suggestion = response.data;
+
+      setAiSuggestion(suggestion);
+
+      setFormData((prev) => ({
+        ...prev,
+        title: suggestion.title || prev.title,
+        categoryId: categoryMap[suggestion.category] || prev.categoryId,
+        priorityId: priorityMap[suggestion.priority] || prev.priorityId
+      }));
+
+      setMessage("AI suggestions applied successfully.");
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message || "AI analysis failed."
+      );
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -64,7 +118,7 @@ function CreateTicket() {
             <p className="page-label">Ticket Center</p>
             <h1>Create Ticket</h1>
             <p className="page-subtitle">
-              Submit a new IT support request.
+              Submit a new IT support request with AI-powered suggestions.
             </p>
           </div>
         </div>
@@ -87,6 +141,24 @@ function CreateTicket() {
             onChange={handleChange}
             required
           />
+
+          <button
+            type="button"
+            className="ai-analyze-btn"
+            onClick={analyzeWithAI}
+            disabled={aiLoading}
+          >
+            {aiLoading ? "Analyzing..." : "✨ Analyze with AI"}
+          </button>
+
+          {aiSuggestion && (
+            <div className="ai-suggestion-card">
+              <h3>AI Suggestion</h3>
+              <p><strong>Category:</strong> {aiSuggestion.category}</p>
+              <p><strong>Priority:</strong> {aiSuggestion.priority}</p>
+              <p><strong>Summary:</strong> {aiSuggestion.summary}</p>
+            </div>
+          )}
 
           <div className="form-grid">
             <div>

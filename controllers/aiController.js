@@ -7,7 +7,6 @@ const ai = new GoogleGenAI({
 
 async function askChatbot(req, res) {
   try {
-
     const { message } = req.body;
 
     if (!message) {
@@ -17,54 +16,93 @@ async function askChatbot(req, res) {
     }
 
     const prompt = `
-You are the AI assistant of an IT Help Desk System.
+You are an AI assistant for an IT Help Desk System.
 
-Rules:
+Answer clearly and shortly.
 
-1. Help employees solve IT problems.
-2. If possible, explain the solution.
-3. Suggest ONE category:
-- Hardware
-- Software
-- Network
-- Email
-- Access Request
-- Other
+Include:
+- Category: Hardware, Software, Network, Email, Access Request, or Other
+- Priority: Low, Medium, High, or Critical
+- Suggested steps
+- Whether the user should create a ticket
 
-4. Suggest ONE priority:
-- Low
-- Medium
-- High
-- Critical
-
-5. If the issue needs human intervention, recommend creating a ticket.
-
-User Problem:
-
+User issue:
 ${message}
 `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: prompt
     });
 
     res.json({
       reply: response.text
     });
-
   } catch (error) {
-
-    console.log(error);
-
     res.status(500).json({
-      message: "Gemini failed.",
+      message: "AI assistant failed.",
       error: error.message
     });
+  }
+}
 
+async function analyzeTicket(req, res) {
+  try {
+    const { title, description } = req.body;
+
+    if (!description) {
+      return res.status(400).json({
+        message: "Description is required."
+      });
+    }
+
+    const prompt = `
+Analyze this IT help desk ticket.
+
+Return ONLY valid JSON. No markdown. No explanation.
+
+Allowed categories:
+Hardware, Software, Network, Email, Access Request, Other
+
+Allowed priorities:
+Low, Medium, High, Critical
+
+Return this format:
+{
+  "title": "short improved title",
+  "category": "one category",
+  "priority": "one priority",
+  "summary": "short summary"
+}
+
+Ticket title:
+${title || "No title"}
+
+Ticket description:
+${description}
+`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt
+    });
+
+    let text = response.text.trim();
+
+    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    const analysis = JSON.parse(text);
+
+    res.json(analysis);
+  } catch (error) {
+    res.status(500).json({
+      message: "AI ticket analysis failed.",
+      error: error.message
+    });
   }
 }
 
 module.exports = {
-  askChatbot
+  askChatbot,
+  analyzeTicket
 };

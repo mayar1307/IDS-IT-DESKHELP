@@ -1,7 +1,8 @@
 const express = require("express");
 
 const {
-  askChatbot
+  askChatbot,
+  analyzeTicket
 } = require("../controllers/aiController");
 
 const {
@@ -11,5 +12,6 @@ const {
 const router = express.Router();
 
 router.post("/chat", verifyToken, askChatbot);
+router.post("/analyze-ticket", verifyToken, analyzeTicket);
 
 module.exports = router;
