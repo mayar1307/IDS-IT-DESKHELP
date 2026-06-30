@@ -10,6 +10,7 @@ import Reports from "./pages/Reports";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import AdminSettings from "./pages/AdminSettings";
+import AIChatbot from "./components/AIChatbot";
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin-settings" element={<AdminSettings />} />
       </Routes>
+
+      <AIChatbot />
     </BrowserRouter>
   );
 }
